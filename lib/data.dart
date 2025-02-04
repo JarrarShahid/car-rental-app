@@ -27,6 +27,6 @@ Car(
   brand: "Audi",
   price: 250,
   image: 'assets/audi_a5.jpg',
-  rating: 4.5,
+  rating: 4.9,
   ),
 ];

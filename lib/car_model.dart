@@ -1,11 +1,11 @@
-class Car{
+class Car {
   final String name;
   final String brand;
   final double price;
   final String image;
   final double rating;
 
-  Car({
+  Car ({
     required this.name,
     required this.brand,
     required this.price,
