@@ -4,7 +4,7 @@ import 'package:car_rental_app/car_model.dart';
 
 class CarDetailScreen extends StatelessWidget {
   final Car car;
-  const CarDetailScreen({required this.car});
+  const CarDetailScreen({super.key, required this.car});
 
   @override
   Widget build(BuildContext context) {
@@ -36,9 +36,9 @@ class CarDetailScreen extends StatelessWidget {
                               ),
                             ),
                             child: Image.asset(
-                              car.image, 
+                              car.image,
                               fit: BoxFit.cover,
-                              ),
+                            ),
                           ),
                         ),
                       ),
@@ -49,20 +49,66 @@ class CarDetailScreen extends StatelessWidget {
                         child: Container(
                           height: 80,
                           decoration: BoxDecoration(
-                              gradient: LinearGradient(
-                                colors: [
-                                  Colors.transparent,
-                                  AppColors.primary.withOpacity(0.8),
-                                ],
-                                begin: Alignment.topCenter,
-                                end: Alignment.bottomCenter,
-                              ),
+                            gradient: LinearGradient(
+                              colors: [
+                                Colors.transparent,
+                                AppColors.primary.withOpacity(0.8),
+                              ],
+                              begin: Alignment.topCenter,
+                              end: Alignment.bottomCenter,
                             ),
+                          ),
                         ),
                       ),
                     ],
                   ),
                 ),
+                leading: IconButton(
+                  onPressed: () => Navigator.pop,
+                  icon: Container(
+                    padding: EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      shape: BoxShape.circle,
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.2),
+                          blurRadius: 8,
+                        ),
+                      ],
+                    ),
+                    child: Icon(
+                      Icons.arrow_back,
+                      color: AppColors.primary,
+                      size: 20,
+                    ),
+                  ),
+                ),
+                actions: [
+                  IconButton(
+                    onPressed: () {},
+                    icon: Container(
+                      padding: EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        shape: BoxShape.circle,
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.2),
+                            blurRadius: 8,
+                          ),
+                        ],
+                      ),
+                      child: Center(
+                        child: Icon(
+                          Icons.favorite,
+                          color: AppColors.secondary,
+                          size: 22,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ],
           ),
