@@ -212,6 +212,21 @@ class CarDetailScreen extends StatelessWidget {
                               ],
                             ),
                           ),
+                          SizedBox(
+                            height: 30,
+                          ),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text('Specifications',
+                              style: TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                                color: AppColors.textDark,
+                              ),
+                              ),
+                            ],
+                          ),
                         ],
                       ),
                     ),
@@ -275,8 +290,49 @@ class CarDetailScreen extends StatelessWidget {
       ),
       child: Column(
         children: [
-          Icon(icon, color: AppColors.secondary),
-          ],
+          Icon(
+            icon,
+            color: AppColors.secondary,
+            size: 24,
+          ),
+          SizedBox(height: 10),
+          Text(
+            value,
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 16,
+              color: AppColors.textDark,
+            ),
+          ),
+          SizedBox(height: 5),
+          Text(
+            label,
+            style: TextStyle(
+              color: AppColors.textLight,
+              fontSize: 12,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildFeatureChip(String label){
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: 15, vertical: 8),
+      decoration: BoxDecoration(
+        color: AppColors.secondary.withOpacity(0.1),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(
+          color: AppColors.secondary.withOpacity(0.3),
+          width: 1,
+        ),
+      ),
+      child: Text(label,
+      style: TextStyle(
+        color: AppColors.secondary,
+        fontWeight: FontWeight.w500, 
+      ),
       ),
     );
   }
