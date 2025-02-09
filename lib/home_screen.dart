@@ -12,7 +12,7 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  final int _selectedIndex = 0;
+  int _selectedIndex = 0;
   int _selectedCategory = 0;
   final categories = ['All', 'Tesla', 'BMW', 'Mercedes', 'Audi'];
   @override
@@ -304,8 +304,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                 Navigator.push(
                                     context,
                                     MaterialPageRoute(
-                                      builder: (context) =>
-                                          CarDetailScreen(car : featuredCars[index]),
+                                      builder: (context) => CarDetailScreen(
+                                          car: featuredCars[index]),
                                     ));
                               },
                               child: Container(
@@ -427,6 +427,69 @@ class _HomeScreenState extends State<HomeScreen> {
             ],
           ),
         ),
+      ),
+      bottomNavigationBar: Container(
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(25),
+            topRight: Radius.circular(25),
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.05),
+              blurRadius: 10,
+              offset: Offset(0, -5),
+            ),
+          ],
+        ),
+        child: Padding(
+          padding: EdgeInsets.symmetric(
+            horizontal: 15,
+            vertical: 10,
+          ),
+          child: BottomNavigationBar(
+            currentIndex: _selectedIndex,
+            onTap: (index){
+              setState(() {
+                _selectedIndex = index;
+              });
+            },
+            backgroundColor: Colors.transparent,
+            selectedItemColor: AppColors.secondary,
+            unselectedItemColor: AppColors.textLight,
+            showUnselectedLabels: true,
+            type: BottomNavigationBarType.fixed,
+            elevation: 0,
+            items: [
+              BottomNavigationBarItem(
+                icon: Icon(_selectedIndex == 0 ? Icons.home : Icons.home_outlined,
+                size: 24,
+                ), 
+                label: "Home",
+                ),
+                BottomNavigationBarItem(
+                icon: Icon(_selectedIndex == 1 ? Icons.search : Icons.search_outlined,
+                size: 24,
+                ), 
+                label: "Search",
+                ),
+                BottomNavigationBarItem(
+                icon: Icon(_selectedIndex == 2 ? Icons.favorite : Icons.favorite_outlined,
+                size: 24,
+                ), 
+                label: "Favorites",
+                ),
+                BottomNavigationBarItem(
+                icon: Icon(_selectedIndex == 3 ? Icons.person : Icons.person_outlined,
+                size: 24,
+                ), 
+                label: "Profile",
+                ),
+            ],
+          ), 
+          ),
+
       ),
     );
   }
