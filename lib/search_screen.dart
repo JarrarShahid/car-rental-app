@@ -1,3 +1,4 @@
+import 'package:car_rental_app/car_model.dart';
 import 'package:flutter/material.dart';
 import 'package:car_rental_app/colors.dart';
 import 'package:car_rental_app/data.dart';
@@ -16,7 +17,8 @@ class SearchScreen extends StatefulWidget {
 
 class _SearchScreenState extends State<SearchScreen> {
   TextEditingController searchController = TextEditingController();
-  List filteredCars = [];
+  List<Car> filteredCars = [];
+
   int _selectedIndex = 1;
 
   @override
@@ -26,12 +28,21 @@ class _SearchScreenState extends State<SearchScreen> {
   }
 
   void filterSearch(String query) {
+    if (query.isEmpty) {
+      setState(() {
+        filteredCars = [];
+      });
+      return;
+    }
+
     setState(() {
-      filteredCars = featuredCars
-          .where((car) =>
-              car.name.toLowerCase().contains(query.toLowerCase()) ||
-              car.brand.toLowerCase().contains(query.toLowerCase()))
-          .toList();
+      Set<Car> searchResults = {
+        ...allCars
+            .where((car) => car.brand.toLowerCase() == query.toLowerCase()),
+        ...featuredCars
+            .where((car) => car.brand.toLowerCase() == query.toLowerCase()),
+      };
+      filteredCars = searchResults.toList();
     });
   }
 
@@ -68,8 +79,11 @@ class _SearchScreenState extends State<SearchScreen> {
       child: Scaffold(
         backgroundColor: AppColors.background,
         appBar: AppBar(
-          title: Text("Search", style: TextStyle(color: AppColors.cardBg),),
-        backgroundColor: AppColors.secondary,
+          title: Text(
+            "Search",
+            style: TextStyle(color: AppColors.cardBg),
+          ),
+          backgroundColor: AppColors.secondary,
           automaticallyImplyLeading: false,
         ),
         body: Padding(
@@ -78,7 +92,7 @@ class _SearchScreenState extends State<SearchScreen> {
             children: [
               TextField(
                 controller: searchController,
-                onChanged: filterSearch,
+                onSubmitted: filterSearch,
                 decoration: InputDecoration(
                   hintText: "Search for cars...",
                   prefixIcon: Icon(Icons.search, color: AppColors.primary),
@@ -89,62 +103,80 @@ class _SearchScreenState extends State<SearchScreen> {
               ),
               SizedBox(height: 20),
               Expanded(
-                child: filteredCars.isEmpty
+                child: searchController.text.isEmpty
                     ? Center(
                         child: Text(
-                          "No cars found!",
-                          style:
-                              TextStyle(fontSize: 18, color: AppColors.textLight),
+                          "Enter a brand name to search.",
+                          style: TextStyle(
+                              fontSize: 18, color: AppColors.textLight),
                         ),
                       )
-                    : ListView.builder(
-                        itemCount: filteredCars.length,
-                        itemBuilder: (context, index) {
-                          final car = filteredCars[index];
-                          return GestureDetector(
-                            onTap: () {
-                              Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
+                    : filteredCars.isEmpty
+                        ? Center(
+                            child: Text(
+                              "No cars found!",
+                              style: TextStyle(
+                                  fontSize: 18, color: AppColors.textLight),
+                            ),
+                          )
+                        : ListView.builder(
+                            itemCount: filteredCars.length,
+                            itemBuilder: (context, index) {
+                              final car = filteredCars[index];
+                              return GestureDetector(
+                                onTap: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
                                       builder: (context) =>
-                                          CarDetailScreen(car: car)));
-                            },
-                            child: Card(
-                              margin: EdgeInsets.only(bottom: 15),
-                              shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(12)),
-                              elevation: 5,
-                              child: Padding(
-                                padding: EdgeInsets.all(12),
-                                child: Row(
-                                  children: [
-                                    Image.asset(car.image, height: 60, width: 90),
-                                    SizedBox(width: 10),
-                                    Expanded(
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          Text(car.name,
-                                              style: TextStyle(
+                                          CarDetailScreen(car: car),
+                                    ),
+                                  );
+                                },
+                                child: Card(
+                                  margin: EdgeInsets.only(bottom: 15),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                  elevation: 5,
+                                  child: Padding(
+                                    padding: EdgeInsets.all(12),
+                                    child: Row(
+                                      children: [
+                                        Image.asset(car.image,
+                                            height: 60, width: 90),
+                                        SizedBox(width: 10),
+                                        Expanded(
+                                          child: Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              Text(
+                                                car.name,
+                                                style: TextStyle(
                                                   fontSize: 16,
                                                   fontWeight: FontWeight.bold,
-                                                  color: AppColors.textDark)),
-                                          SizedBox(height: 5),
-                                          Text("\$${car.price}/day",
-                                              style: TextStyle(
+                                                  color: AppColors.textDark,
+                                                ),
+                                              ),
+                                              SizedBox(height: 5),
+                                              Text(
+                                                "\$${car.price}/day",
+                                                style: TextStyle(
                                                   fontSize: 14,
-                                                  color: AppColors.secondary)),
-                                        ],
-                                      ),
+                                                  color: AppColors.secondary,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ],
                                     ),
-                                  ],
+                                  ),
                                 ),
-                              ),
-                            ),
-                          );
-                        },
-                      ),
+                              );
+                            },
+                          ),
               ),
             ],
           ),
@@ -176,10 +208,14 @@ class _SearchScreenState extends State<SearchScreen> {
               type: BottomNavigationBarType.fixed,
               elevation: 0,
               items: const [
-                BottomNavigationBarItem(icon: Icon(Icons.home_outlined), label: "Home"),
-                BottomNavigationBarItem(icon: Icon(Icons.search_outlined), label: "Search"),
-                BottomNavigationBarItem(icon: Icon(Icons.favorite_outlined), label: "Favorites"),
-                BottomNavigationBarItem(icon: Icon(Icons.person_outlined), label: "Profile"),
+                BottomNavigationBarItem(
+                    icon: Icon(Icons.home_outlined), label: "Home"),
+                BottomNavigationBarItem(
+                    icon: Icon(Icons.search_outlined), label: "Search"),
+                BottomNavigationBarItem(
+                    icon: Icon(Icons.favorite_outlined), label: "Favorites"),
+                BottomNavigationBarItem(
+                    icon: Icon(Icons.person_outlined), label: "Profile"),
               ],
             ),
           ),

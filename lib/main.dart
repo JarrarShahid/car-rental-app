@@ -1,5 +1,6 @@
 import 'package:car_rental_app/colors.dart';
 import 'package:car_rental_app/home_screen.dart';
+import 'package:car_rental_app/login_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -21,7 +22,7 @@ class MyApp extends StatelessWidget {
         textTheme: GoogleFonts.poppinsTextTheme(),
       ),
       title: 'Car Rental App',
-      home: HomeScreen(),
+      home: LoginScreen(),
     );
   }
 }

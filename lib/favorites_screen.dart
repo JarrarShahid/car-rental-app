@@ -1,3 +1,4 @@
+import 'package:car_rental_app/car_model.dart';
 import 'package:flutter/material.dart';
 import 'package:car_rental_app/colors.dart';
 import 'package:car_rental_app/data.dart';
@@ -50,7 +51,10 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
       child: Scaffold(
         backgroundColor: AppColors.background,
         appBar: AppBar(
-          title: Text("Favorites", style: TextStyle(color: AppColors.cardBg),),
+          title: Text(
+            "Favorites",
+            style: TextStyle(color: AppColors.cardBg),
+          ),
           backgroundColor: AppColors.secondary,
           automaticallyImplyLeading: false,
         ),
@@ -63,52 +67,17 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
                     style: TextStyle(fontSize: 18, color: AppColors.textLight),
                   ),
                 )
-              : ListView.builder(
-                  itemCount: featuredCars.length,
-                  itemBuilder: (context, index) {
-                    final car = featuredCars[index];
-                    return GestureDetector(
-                      onTap: () {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => CarDetailScreen(car: car)));
-                      },
-                      child: Card(
-                        margin: EdgeInsets.only(bottom: 15),
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12)),
-                        elevation: 5,
-                        child: Padding(
-                          padding: EdgeInsets.all(12),
-                          child: Row(
-                            children: [
-                              Image.asset(car.image, height: 60, width: 90),
-                              SizedBox(width: 10),
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(car.name,
-                                        style: TextStyle(
-                                            fontSize: 16,
-                                            fontWeight: FontWeight.bold,
-                                            color: AppColors.textDark)),
-                                    SizedBox(height: 5),
-                                    Text("\$${car.price}/day",
-                                        style: TextStyle(
-                                            fontSize: 14,
-                                            color: AppColors.secondary)),
-                                  ],
-                                ),
-                              ),
-                              Icon(Icons.favorite, color: AppColors.secondary),
-                            ],
-                          ),
-                        ),
-                      ),
-                    );
-                  },
+              : Expanded(
+                  child: ListView.builder(
+                    itemCount: featuredCars.length,
+                    itemBuilder: (context, index) {
+                      return Padding(
+                        padding: EdgeInsets.only(
+                            bottom: 15), // Adds spacing between items
+                        child: _buildCarCard(featuredCars[index]),
+                      );
+                    },
+                  ),
                 ),
         ),
         bottomNavigationBar: Container(
@@ -138,13 +107,143 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
               type: BottomNavigationBarType.fixed,
               elevation: 0,
               items: const [
-                BottomNavigationBarItem(icon: Icon(Icons.home_outlined), label: "Home"),
-                BottomNavigationBarItem(icon: Icon(Icons.search_outlined), label: "Search"),
-                BottomNavigationBarItem(icon: Icon(Icons.favorite_outlined), label: "Favorites"),
-                BottomNavigationBarItem(icon: Icon(Icons.person_outlined), label: "Profile"),
+                BottomNavigationBarItem(
+                    icon: Icon(Icons.home_outlined), label: "Home"),
+                BottomNavigationBarItem(
+                    icon: Icon(Icons.search_outlined), label: "Search"),
+                BottomNavigationBarItem(
+                    icon: Icon(Icons.favorite_outlined), label: "Favorites"),
+                BottomNavigationBarItem(
+                    icon: Icon(Icons.person_outlined), label: "Profile"),
               ],
             ),
           ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildCarCard(Car car) {
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => CarDetailScreen(car: car),
+            ));
+      },
+      child: Container(
+        width: 220,
+        margin: EdgeInsets.only(right: 20),
+        decoration: BoxDecoration(
+          color: AppColors.cardBg,
+          borderRadius: BorderRadius.circular(20),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.05),
+              blurRadius: 10,
+              offset: Offset(0, 5),
+            ),
+          ],
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(
+              height: 140,
+              decoration: BoxDecoration(
+                color: AppColors.primary.withOpacity(0.1),
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(20),
+                  topRight: Radius.circular(20),
+                ),
+              ),
+              child: Center(
+                child: Hero(
+                  tag: car.name,
+                  child: Image.asset(
+                    car.image,
+                    height: 115,
+                    fit: BoxFit.contain,
+                  ),
+                ),
+              ),
+            ),
+            Padding(
+              padding: EdgeInsets.all(15),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    car.brand,
+                    style: TextStyle(
+                      color: AppColors.textLight,
+                      fontSize: 14,
+                    ),
+                  ),
+                  SizedBox(
+                    height: 5,
+                  ),
+                  Text(
+                    car.name,
+                    style: TextStyle(
+                      color: AppColors.textDark,
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  SizedBox(
+                    height: 10,
+                  ),
+                  Row(
+                    children: [
+                      Icon(
+                        Icons.star,
+                        color: Colors.amber,
+                        size: 18,
+                      ),
+                      SizedBox(
+                        width: 5,
+                      ),
+                      Text(
+                        car.rating.toString(),
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: AppColors.textDark,
+                        ),
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: 10),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        '\$${car.price}/day',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 18,
+                          color: AppColors.secondary,
+                        ),
+                      ),
+                      Container(
+                        padding: EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          color: AppColors.secondary,
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: Icon(
+                          Icons.arrow_forward,
+                          color: Colors.white,
+                          size: 20,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ],
         ),
       ),
     );

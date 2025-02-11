@@ -1,30 +1,28 @@
+import 'package:car_rental_app/audi_screen.dart';
+import 'package:car_rental_app/bmw_screen.dart';
 import 'package:car_rental_app/car_detail_screen.dart';
 import 'package:car_rental_app/car_model.dart';
 import 'package:car_rental_app/colors.dart';
 import 'package:car_rental_app/data.dart';
 import 'package:car_rental_app/db_helper.dart';
 import 'package:car_rental_app/favorites_screen.dart';
+import 'package:car_rental_app/home_screen.dart';
 import 'package:car_rental_app/profile_screen.dart';
 import 'package:car_rental_app/search_screen.dart';
-import 'package:flutter/material.dart';
 import 'package:car_rental_app/tesla_screen.dart';
-import 'package:car_rental_app/bmw_screen.dart';
-import 'package:car_rental_app/mercedes_screen.dart';
-import 'package:car_rental_app/audi_screen.dart';
+import 'package:flutter/material.dart';
 
-class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key});
+class MercedesScreen extends StatefulWidget {
+  const MercedesScreen({super.key});
 
   @override
-  State<HomeScreen> createState() => _HomeScreenState();
+  State<MercedesScreen> createState() => _MercedesScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
+class _MercedesScreenState extends State<MercedesScreen> {
   int _selectedIndex = 0;
-  int _selectedCategory = 0;
+  int _selectedCategory = 3;
   final categories = ['All', 'Tesla', 'BMW', 'Mercedes', 'Audi'];
-  TextEditingController searchController = TextEditingController();
-  List<Car> filteredCars = [];
   String userName = "";
 
   void _loadUserName() async {
@@ -39,27 +37,15 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
-    filteredCars = featuredCars;
     _loadUserName();
   }
 
-  void filterSearch(String query) {
-    if (query.isEmpty) {
-      setState(() {
-        filteredCars = [];
-      });
-      return;
-    }
-
-    setState(() {
-      Set<Car> searchResults = {
-        ...allCars
-            .where((car) => car.brand.toLowerCase() == query.toLowerCase()),
-        ...featuredCars
-            .where((car) => car.brand.toLowerCase() == query.toLowerCase()),
-      };
-      filteredCars = searchResults.toList();
-    });
+  List<Car> getMercedesCars() {
+    Set<Car> mercedesCars = {
+      ...featuredCars.where((car) => car.brand == "Mercedes"),
+      ...allCars.where((car) => car.brand == "Mercedes"),
+    };
+    return mercedesCars.toList();
   }
 
   @override
@@ -197,6 +183,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     SizedBox(
                       height: 30,
                     ),
+
                     // Categories
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -209,9 +196,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             color: AppColors.textDark,
                           ),
                         ),
-                        SizedBox(
-                          height: 15,
-                        ),
+                        SizedBox(height: 15),
                         SizedBox(
                           height: 45,
                           child: ListView.builder(
@@ -224,7 +209,6 @@ class _HomeScreenState extends State<HomeScreen> {
                                   setState(() {
                                     _selectedCategory = index;
                                   });
-
                                   switch (categories[index]) {
                                     case 'Tesla':
                                       Navigator.push(
@@ -266,12 +250,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                   }
                                 },
                                 child: Container(
-                                  margin: EdgeInsets.only(
-                                    right: 10,
-                                  ),
-                                  padding: EdgeInsets.symmetric(
-                                    horizontal: 25,
-                                  ),
+                                  margin: EdgeInsets.only(right: 10),
+                                  padding: EdgeInsets.symmetric(horizontal: 25),
                                   decoration: BoxDecoration(
                                     color: isSelected
                                         ? AppColors.secondary
@@ -307,206 +287,16 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                       ],
                     ),
+                    SizedBox(height: 30),
                     SizedBox(
-                      height: 30,
-                    ),
-                    // Featured Cars
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(
-                              "Featured Cars",
-                              style: TextStyle(
-                                fontSize: 20,
-                                fontWeight: FontWeight.bold,
-                                color: AppColors.textDark,
-                              ),
-                            ),
-                            TextButton(
-                              onPressed: () {},
-                              child: Text(
-                                "View All",
-                                style: TextStyle(
-                                  color: AppColors.secondary,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                        SizedBox(height: 15),
-                        SizedBox(
-                          height: 300,
-                          child: ListView.builder(
-                            scrollDirection: Axis.horizontal,
-                            itemCount: featuredCars.length,
-                            itemBuilder: (context, index) {
-                              return _buildCarCard(featuredCars[index]);
-                            },
-                          ),
-                        ),
-                      ],
-                    ),
-                    SizedBox(
-                      height: 20,
-                    ),
-                    // Popular Deals
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(
-                              "Popular Deals",
-                              style: TextStyle(
-                                fontSize: 20,
-                                fontWeight: FontWeight.bold,
-                                color: AppColors.textDark,
-                              ),
-                            ),
-                            TextButton(
-                              onPressed: () {},
-                              child: Text(
-                                "View All",
-                                style: TextStyle(
-                                  color: AppColors.secondary,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                        SizedBox(height: 15),
-                        ListView.builder(
-                          shrinkWrap: true,
-                          physics: NeverScrollableScrollPhysics(),
-                          itemCount: featuredCars.length,
-                          itemBuilder: (context, index) {
-                            return InkWell(
-                              onTap: () {
-                                Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => CarDetailScreen(
-                                          car: featuredCars[index]),
-                                    ));
-                              },
-                              child: Container(
-                                margin: EdgeInsets.only(
-                                    bottom: 10), // Reduced margin
-                                padding: EdgeInsets.all(12), // Reduced padding
-                                decoration: BoxDecoration(
-                                  color: AppColors.cardBg,
-                                  borderRadius: BorderRadius.circular(
-                                      12), // Smaller radius
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: Colors.black.withOpacity(0.05),
-                                      blurRadius: 8, // Slightly reduced blur
-                                      offset: Offset(0, 3),
-                                    ),
-                                  ],
-                                ),
-                                child: Row(
-                                  children: [
-                                    Container(
-                                      height: 70, // Reduced height
-                                      width: 100, // Reduced width
-                                      decoration: BoxDecoration(
-                                        color:
-                                            AppColors.primary.withOpacity(0.1),
-                                        borderRadius: BorderRadius.circular(10),
-                                      ),
-                                      child: Center(
-                                        child: Image.asset(
-                                          featuredCars[index].image,
-                                          height: 50, // Smaller image
-                                          fit: BoxFit.contain,
-                                        ),
-                                      ),
-                                    ),
-                                    SizedBox(width: 10), // Adjusted spacing
-                                    Expanded(
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          Text(
-                                            featuredCars[index].name,
-                                            style: TextStyle(
-                                              fontWeight: FontWeight.bold,
-                                              fontSize: 14, // Reduced font size
-                                              color: AppColors.textDark,
-                                            ),
-                                          ),
-                                          SizedBox(height: 3),
-                                          Row(
-                                            children: [
-                                              Icon(
-                                                Icons.star,
-                                                color: Colors.amber,
-                                                size: 14, // Smaller icon
-                                              ),
-                                              SizedBox(width: 4),
-                                              Text(
-                                                featuredCars[index]
-                                                    .rating
-                                                    .toString(),
-                                                style: TextStyle(
-                                                    color: AppColors.textLight),
-                                              ),
-                                            ],
-                                          ),
-                                          SizedBox(height: 3),
-                                          Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.spaceBetween,
-                                            children: [
-                                              Text(
-                                                '\$${featuredCars[index].price}/day',
-                                                style: TextStyle(
-                                                  fontWeight: FontWeight.bold,
-                                                  fontSize:
-                                                      14, // Reduced font size
-                                                  color: AppColors.secondary,
-                                                ),
-                                              ),
-                                              Container(
-                                                padding: EdgeInsets.symmetric(
-                                                  horizontal: 10,
-                                                  vertical: 5,
-                                                ),
-                                                decoration: BoxDecoration(
-                                                  color: AppColors.secondary
-                                                      .withOpacity(0.1),
-                                                  borderRadius:
-                                                      BorderRadius.circular(15),
-                                                ),
-                                                child: Text(
-                                                  "Book Now",
-                                                  style: TextStyle(
-                                                    color: AppColors.secondary,
-                                                    fontWeight: FontWeight.w600,
-                                                    fontSize: 12,
-                                                  ),
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            );
-                          },
-                        )
-                      ],
+                      height: 300,
+                      child: ListView.builder(
+                        scrollDirection: Axis.horizontal,
+                        itemCount: getMercedesCars().length,
+                        itemBuilder: (context, index) {
+                          return _buildCarCard(getMercedesCars()[index]);
+                        },
+                      ),
                     ),
                   ],
                 ),
@@ -515,6 +305,8 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ),
       ),
+
+// bottom Navigation Bar
       bottomNavigationBar: Container(
         decoration: BoxDecoration(
           color: Colors.white,
