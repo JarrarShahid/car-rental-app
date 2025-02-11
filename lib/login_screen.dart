@@ -5,6 +5,8 @@ import 'package:car_rental_app/home_screen.dart';
 import 'package:car_rental_app/db_helper.dart';
 
 class LoginScreen extends StatefulWidget {
+  const LoginScreen({super.key});
+
   @override
   _LoginScreenState createState() => _LoginScreenState();
 }

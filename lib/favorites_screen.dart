@@ -2,72 +2,150 @@ import 'package:flutter/material.dart';
 import 'package:car_rental_app/colors.dart';
 import 'package:car_rental_app/data.dart';
 import 'package:car_rental_app/car_detail_screen.dart';
+import 'package:car_rental_app/home_screen.dart';
+import 'package:car_rental_app/search_screen.dart';
+import 'package:car_rental_app/favorites_screen.dart';
+import 'package:car_rental_app/profile_screen.dart';
 
-class FavoritesScreen extends StatelessWidget {
+class FavoritesScreen extends StatefulWidget {
+  const FavoritesScreen({super.key});
+
+  @override
+  _FavoritesScreenState createState() => _FavoritesScreenState();
+}
+
+class _FavoritesScreenState extends State<FavoritesScreen> {
+  int _selectedIndex = 2;
+
+  void _onItemTapped(int index) {
+    if (index != _selectedIndex) {
+      Widget destination;
+      switch (index) {
+        case 0:
+          destination = const HomeScreen();
+          break;
+        case 1:
+          destination = const SearchScreen();
+          break;
+        case 2:
+          destination = const FavoritesScreen();
+          break;
+        case 3:
+          destination = const ProfileScreen();
+          break;
+        default:
+          return;
+      }
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => destination),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.background,
-      appBar: AppBar(
-        title: Text("Favorites"),
-        backgroundColor: AppColors.primary,
-      ),
-      body: Padding(
-        padding: EdgeInsets.all(20),
-        child: featuredCars.isEmpty
-            ? Center(
-                child: Text(
-                  "No favorite cars yet!",
-                  style: TextStyle(fontSize: 18, color: AppColors.textLight),
-                ),
-              )
-            : ListView.builder(
-                itemCount: featuredCars.length,
-                itemBuilder: (context, index) {
-                  final car = featuredCars[index];
-                  return GestureDetector(
-                    onTap: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => CarDetailScreen(car: car)));
-                    },
-                    child: Card(
-                      margin: EdgeInsets.only(bottom: 15),
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12)),
-                      elevation: 5,
-                      child: Padding(
-                        padding: EdgeInsets.all(12),
-                        child: Row(
-                          children: [
-                            Image.asset(car.image, height: 60, width: 90),
-                            SizedBox(width: 10),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(car.name,
-                                      style: TextStyle(
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.bold,
-                                          color: AppColors.textDark)),
-                                  SizedBox(height: 5),
-                                  Text("\$${car.price}/day",
-                                      style: TextStyle(
-                                          fontSize: 14,
-                                          color: AppColors.secondary)),
-                                ],
+    return WillPopScope(
+      onWillPop: () async => false,
+      child: Scaffold(
+        backgroundColor: AppColors.background,
+        appBar: AppBar(
+          title: Text("Favorites", style: TextStyle(color: AppColors.cardBg),),
+          backgroundColor: AppColors.secondary,
+          automaticallyImplyLeading: false,
+        ),
+        body: Padding(
+          padding: EdgeInsets.all(20),
+          child: featuredCars.isEmpty
+              ? Center(
+                  child: Text(
+                    "No favorite cars yet!",
+                    style: TextStyle(fontSize: 18, color: AppColors.textLight),
+                  ),
+                )
+              : ListView.builder(
+                  itemCount: featuredCars.length,
+                  itemBuilder: (context, index) {
+                    final car = featuredCars[index];
+                    return GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => CarDetailScreen(car: car)));
+                      },
+                      child: Card(
+                        margin: EdgeInsets.only(bottom: 15),
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12)),
+                        elevation: 5,
+                        child: Padding(
+                          padding: EdgeInsets.all(12),
+                          child: Row(
+                            children: [
+                              Image.asset(car.image, height: 60, width: 90),
+                              SizedBox(width: 10),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(car.name,
+                                        style: TextStyle(
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.bold,
+                                            color: AppColors.textDark)),
+                                    SizedBox(height: 5),
+                                    Text("\$${car.price}/day",
+                                        style: TextStyle(
+                                            fontSize: 14,
+                                            color: AppColors.secondary)),
+                                  ],
+                                ),
                               ),
-                            ),
-                            Icon(Icons.favorite, color: AppColors.secondary),
-                          ],
+                              Icon(Icons.favorite, color: AppColors.secondary),
+                            ],
+                          ),
                         ),
                       ),
-                    ),
-                  );
-                },
+                    );
+                  },
+                ),
+        ),
+        bottomNavigationBar: Container(
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(25),
+              topRight: Radius.circular(25),
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.05),
+                blurRadius: 10,
+                offset: Offset(0, -5),
               ),
+            ],
+          ),
+          child: Padding(
+            padding: EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+            child: BottomNavigationBar(
+              currentIndex: _selectedIndex,
+              onTap: _onItemTapped,
+              backgroundColor: Colors.transparent,
+              selectedItemColor: AppColors.secondary,
+              unselectedItemColor: AppColors.textLight,
+              showUnselectedLabels: true,
+              type: BottomNavigationBarType.fixed,
+              elevation: 0,
+              items: const [
+                BottomNavigationBarItem(icon: Icon(Icons.home_outlined), label: "Home"),
+                BottomNavigationBarItem(icon: Icon(Icons.search_outlined), label: "Search"),
+                BottomNavigationBarItem(icon: Icon(Icons.favorite_outlined), label: "Favorites"),
+                BottomNavigationBarItem(icon: Icon(Icons.person_outlined), label: "Profile"),
+              ],
+            ),
+          ),
+        ),
       ),
     );
   }

@@ -2,6 +2,9 @@ import 'package:car_rental_app/car_detail_screen.dart';
 import 'package:car_rental_app/car_model.dart';
 import 'package:car_rental_app/colors.dart';
 import 'package:car_rental_app/data.dart';
+import 'package:car_rental_app/favorites_screen.dart';
+import 'package:car_rental_app/profile_screen.dart';
+import 'package:car_rental_app/search_screen.dart';
 import 'package:flutter/material.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -15,6 +18,16 @@ class _HomeScreenState extends State<HomeScreen> {
   int _selectedIndex = 0;
   int _selectedCategory = 0;
   final categories = ['All', 'Tesla', 'BMW', 'Mercedes', 'Audi'];
+
+  List<Car> getFilteredCars() {
+    if (_selectedCategory == 0) {
+      return allCars;
+    } else {
+      String selectedBrand = categories[_selectedCategory];
+      return allCars.where((car) => car.brand == selectedBrand).toList();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -450,10 +463,32 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
           child: BottomNavigationBar(
             currentIndex: _selectedIndex,
-            onTap: (index){
+            onTap: (index) {
               setState(() {
                 _selectedIndex = index;
               });
+
+              // Navigation logic
+              switch (index) {
+                case 1:
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => SearchScreen()),
+                  );
+                  break;
+                case 2:
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => FavoritesScreen()),
+                  );
+                  break;
+                case 3:
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => ProfileScreen()),
+                  );
+                  break;
+              }
             },
             backgroundColor: Colors.transparent,
             selectedItemColor: AppColors.secondary,
@@ -463,33 +498,38 @@ class _HomeScreenState extends State<HomeScreen> {
             elevation: 0,
             items: [
               BottomNavigationBarItem(
-                icon: Icon(_selectedIndex == 0 ? Icons.home : Icons.home_outlined,
-                size: 24,
-                ), 
+                icon: Icon(
+                  _selectedIndex == 0 ? Icons.home : Icons.home_outlined,
+                  size: 24,
+                ),
                 label: "Home",
+              ),
+              BottomNavigationBarItem(
+                icon: Icon(
+                  _selectedIndex == 1 ? Icons.search : Icons.search_outlined,
+                  size: 24,
                 ),
-                BottomNavigationBarItem(
-                icon: Icon(_selectedIndex == 1 ? Icons.search : Icons.search_outlined,
-                size: 24,
-                ), 
                 label: "Search",
+              ),
+              BottomNavigationBarItem(
+                icon: Icon(
+                  _selectedIndex == 2
+                      ? Icons.favorite
+                      : Icons.favorite_outlined,
+                  size: 24,
                 ),
-                BottomNavigationBarItem(
-                icon: Icon(_selectedIndex == 2 ? Icons.favorite : Icons.favorite_outlined,
-                size: 24,
-                ), 
                 label: "Favorites",
+              ),
+              BottomNavigationBarItem(
+                icon: Icon(
+                  _selectedIndex == 3 ? Icons.person : Icons.person_outlined,
+                  size: 24,
                 ),
-                BottomNavigationBarItem(
-                icon: Icon(_selectedIndex == 3 ? Icons.person : Icons.person_outlined,
-                size: 24,
-                ), 
                 label: "Profile",
-                ),
+              ),
             ],
-          ), 
           ),
-
+        ),
       ),
     );
   }
