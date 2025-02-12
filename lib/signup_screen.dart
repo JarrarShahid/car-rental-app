@@ -1,4 +1,7 @@
+import 'package:car_rental_app/auth_service.dart';
 import 'package:car_rental_app/colors.dart';
+import 'package:car_rental_app/home_screen.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:car_rental_app/db_helper.dart';
 import 'package:car_rental_app/login_screen.dart';
@@ -17,10 +20,30 @@ class _SignupScreenState extends State<SignupScreen> {
   final TextEditingController passwordController = TextEditingController();
   final DBHelper dbHelper = DBHelper();
 
-  void signup() async {
-    await dbHelper.saveUser(nameController.text, emailController.text, contactController.text, passwordController.text);
-    Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => LoginScreen()));
+void signup() async {
+  final authService = AuthService();
+  try {
+    User? user = await authService.signUp(
+      nameController.text.trim(),
+      emailController.text.trim(),
+      contactController.text.trim(),
+      passwordController.text.trim(),
+    );
+
+    if (user != null) {
+      if (!mounted) return;
+      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => HomeScreen()));
+    }
+  } catch (e) {
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text("Signup failed: ${e.toString()}")),
+    );
+    print("Firebase Signup Error: $e"); // ✅ Debugging logs
   }
+}
+
+
 
   @override
   Widget build(BuildContext context) {

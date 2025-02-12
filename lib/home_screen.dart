@@ -1,3 +1,4 @@
+import 'package:car_rental_app/auth_service.dart';
 import 'package:car_rental_app/car_detail_screen.dart';
 import 'package:car_rental_app/car_model.dart';
 import 'package:car_rental_app/colors.dart';
@@ -6,6 +7,7 @@ import 'package:car_rental_app/db_helper.dart';
 import 'package:car_rental_app/favorites_screen.dart';
 import 'package:car_rental_app/profile_screen.dart';
 import 'package:car_rental_app/search_screen.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:car_rental_app/tesla_screen.dart';
 import 'package:car_rental_app/bmw_screen.dart';
@@ -25,16 +27,9 @@ class _HomeScreenState extends State<HomeScreen> {
   final categories = ['All', 'Tesla', 'BMW', 'Mercedes', 'Audi'];
   TextEditingController searchController = TextEditingController();
   List<Car> filteredCars = [];
-  String userName = "";
+  String userName = "User";
 
-  void _loadUserName() async {
-    final dbHelper = DBHelper();
-    final user = await dbHelper.getUser();
-    setState(() {
-      userName =
-          user['name'] ?? "User"; // Default to "User" if no name is found
-    });
-  }
+  final AuthService authService = AuthService();
 
   @override
   void initState() {
@@ -42,6 +37,17 @@ class _HomeScreenState extends State<HomeScreen> {
     filteredCars = featuredCars;
     _loadUserName();
   }
+
+  void _loadUserName() async {
+    User? user = authService.getCurrentUser();
+    if (user != null) {
+      setState(() {
+        userName = user.displayName ?? "User";
+      });
+    }
+  }
+
+
 
   void filterSearch(String query) {
     if (query.isEmpty) {
@@ -98,7 +104,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              "Hello, $userName",
+                               "Hello, $userName",
                               style: TextStyle(
                                 fontSize: 24,
                                 fontWeight: FontWeight.bold,

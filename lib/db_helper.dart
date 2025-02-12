@@ -1,13 +1,16 @@
 // db_helper.dart - Handles user authentication storage
+import 'package:car_rental_app/login_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter/material.dart';
 
 class DBHelper {
-  Future<void> saveUser(String name, String email, String contact, String password) async {
+  Future<void> saveUser(
+      String name, String email, String contact, String password) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString('name', name);
     await prefs.setString('email', email);
     await prefs.setString('contact', contact);
-    await prefs.setString('password', password);
+    await prefs.setString('password', password); // Ensure password is stored
   }
 
   Future<Map<String, String?>> getUser() async {
@@ -20,8 +23,15 @@ class DBHelper {
     };
   }
 
-  Future<void> logout() async {
+  Future<void> logout(BuildContext context) async {
     final prefs = await SharedPreferences.getInstance();
-    await prefs.clear();
+    await prefs.clear(); // Completely clears all stored user data
+
+    if (!context.mounted) return; // Ensure context is valid
+    Navigator.pushAndRemoveUntil(
+      context,
+      MaterialPageRoute(builder: (context) => LoginScreen()),
+      (route) => false, // Removes all previous routes
+    );
   }
 }

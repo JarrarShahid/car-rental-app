@@ -1,4 +1,4 @@
-import 'package:car_rental_app/audi_screen.dart';
+import 'package:car_rental_app/auth_service.dart';
 import 'package:car_rental_app/bmw_screen.dart';
 import 'package:car_rental_app/car_detail_screen.dart';
 import 'package:car_rental_app/car_model.dart';
@@ -11,6 +11,7 @@ import 'package:car_rental_app/mercedes_screen.dart';
 import 'package:car_rental_app/profile_screen.dart';
 import 'package:car_rental_app/search_screen.dart';
 import 'package:car_rental_app/tesla_screen.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class AudiScreen extends StatefulWidget {
@@ -22,23 +23,28 @@ class AudiScreen extends StatefulWidget {
 
 class _AudiScreenState extends State<AudiScreen> {
   int _selectedIndex = 0;
-  int _selectedCategory = 4;
+  int _selectedCategory = 0;
   final categories = ['All', 'Tesla', 'BMW', 'Mercedes', 'Audi'];
-  String userName = "";
+  TextEditingController searchController = TextEditingController();
+  List<Car> filteredCars = [];
+  String userName = "User";
 
-  void _loadUserName() async {
-    final dbHelper = DBHelper();
-    final user = await dbHelper.getUser();
-    setState(() {
-      userName =
-          user['name'] ?? "User"; // Default to "User" if no name is found
-    });
-  }
+  final AuthService authService = AuthService();
 
   @override
   void initState() {
     super.initState();
+    filteredCars = featuredCars;
     _loadUserName();
+  }
+
+  void _loadUserName() async {
+    User? user = authService.getCurrentUser();
+    if (user != null) {
+      setState(() {
+        userName = user.displayName ?? "User";
+      });
+    }
   }
 
   List<Car> getAudiCars() {

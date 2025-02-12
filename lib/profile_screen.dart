@@ -1,3 +1,4 @@
+import 'package:car_rental_app/auth_service.dart';
 import 'package:car_rental_app/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:car_rental_app/db_helper.dart';
@@ -6,6 +7,8 @@ import 'package:car_rental_app/home_screen.dart';
 import 'package:car_rental_app/search_screen.dart';
 import 'package:car_rental_app/favorites_screen.dart';
 import 'package:car_rental_app/profile_screen.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -17,7 +20,7 @@ class ProfileScreen extends StatefulWidget {
 class _ProfileScreenState extends State<ProfileScreen> {
   final DBHelper dbHelper = DBHelper();
   String name = "", email = "", contact = "";
-  int _selectedIndex = 3;
+  final int _selectedIndex = 3;
 
   @override
   void initState() {
@@ -25,18 +28,68 @@ class _ProfileScreenState extends State<ProfileScreen> {
     loadUserData();
   }
 
-  void loadUserData() async {
-    final user = await dbHelper.getUser();
-    setState(() {
-      name = user['name'] ?? "";
-      email = user['email'] ?? "";
-      contact = user['contact'] ?? "";
-    });
+  Future<DocumentSnapshot?> fetchUserDataWithRetry(String uid,
+      {int retries = 3}) async {
+    int attempt = 0;
+
+    while (attempt < retries) {
+      try {
+        return await FirebaseFirestore.instance
+            .collection("users")
+            .doc(uid)
+            .get();
+      } catch (e) {
+        print("Firestore Fetch Attempt ${attempt + 1} Failed: $e");
+
+        if (attempt == retries - 1) {
+          return null; // Stop retrying after max attempts
+        }
+
+        await Future.delayed(Duration(seconds: 2)); // Wait before retrying
+      }
+      attempt++;
+    }
+    return null;
   }
 
+  void loadUserData() async {
+  final user = FirebaseAuth.instance.currentUser;
+
+  if (user != null) {
+    try {
+      DocumentSnapshot userData = await FirebaseFirestore.instance.collection("users").doc(user.uid).get();
+
+      if (userData.exists) {
+        if (!mounted) return; // ✅ Check if widget is still active before updating UI
+
+        setState(() {
+          name = userData["name"] ?? "User";
+          email = userData["email"] ?? "No Email";
+          contact = userData["contact"] ?? "No Contact";
+        });
+      }
+    } catch (e) {
+      print("Firestore Error: $e");
+      
+      if (!mounted) return; // ✅ Prevent UI update if widget is disposed
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Failed to load profile. Please try again later.")),
+      );
+    }
+  }
+}
+
+
+
   void logout() async {
-    await dbHelper.logout();
-    Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => LoginScreen()));
+    await FirebaseAuth.instance.signOut(); // ✅ Logs out the user from Firebase
+
+    if (!mounted) return;
+    Navigator.pushAndRemoveUntil(
+      context,
+      MaterialPageRoute(builder: (context) => LoginScreen()),
+      (route) => false,
+    );
   }
 
   void _onItemTapped(int index) {
@@ -70,7 +123,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
-        title: Text("Profile", style: TextStyle(color: AppColors.cardBg),),
+        title: Text(
+          "Profile",
+          style: TextStyle(color: AppColors.cardBg),
+        ),
         backgroundColor: AppColors.secondary,
         automaticallyImplyLeading: false,
       ),
@@ -96,17 +152,35 @@ class _ProfileScreenState extends State<ProfileScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text("Name:", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: AppColors.textDark)),
+                  Text("Name:",
+                      style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: AppColors.textDark)),
                   SizedBox(height: 5),
-                  Text(name, style: TextStyle(fontSize: 16, color: AppColors.textLight)),
+                  Text(name,
+                      style:
+                          TextStyle(fontSize: 16, color: AppColors.textLight)),
                   Divider(),
-                  Text("Email:", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: AppColors.textDark)),
+                  Text("Email:",
+                      style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: AppColors.textDark)),
                   SizedBox(height: 5),
-                  Text(email, style: TextStyle(fontSize: 16, color: AppColors.textLight)),
+                  Text(email,
+                      style:
+                          TextStyle(fontSize: 16, color: AppColors.textLight)),
                   Divider(),
-                  Text("Contact Number:", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: AppColors.textDark)),
+                  Text("Contact Number:",
+                      style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: AppColors.textDark)),
                   SizedBox(height: 5),
-                  Text(contact, style: TextStyle(fontSize: 16, color: AppColors.textLight)),
+                  Text(contact,
+                      style:
+                          TextStyle(fontSize: 16, color: AppColors.textLight)),
                 ],
               ),
             ),
@@ -120,8 +194,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     borderRadius: BorderRadius.circular(10),
                   ),
                 ),
-                onPressed: logout,
-                child: Text('Logout', style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold)),
+                onPressed: () => logout(),
+                child: Text('Logout',
+                    style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold)),
               ),
             ),
           ],
@@ -154,10 +232,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
             type: BottomNavigationBarType.fixed,
             elevation: 0,
             items: const [
-              BottomNavigationBarItem(icon: Icon(Icons.home_outlined), label: "Home"),
-              BottomNavigationBarItem(icon: Icon(Icons.search_outlined), label: "Search"),
-              BottomNavigationBarItem(icon: Icon(Icons.favorite_outlined), label: "Favorites"),
-              BottomNavigationBarItem(icon: Icon(Icons.person_outlined), label: "Profile"),
+              BottomNavigationBarItem(
+                  icon: Icon(Icons.home_outlined), label: "Home"),
+              BottomNavigationBarItem(
+                  icon: Icon(Icons.search_outlined), label: "Search"),
+              BottomNavigationBarItem(
+                  icon: Icon(Icons.favorite_outlined), label: "Favorites"),
+              BottomNavigationBarItem(
+                  icon: Icon(Icons.person_outlined), label: "Profile"),
             ],
           ),
         ),

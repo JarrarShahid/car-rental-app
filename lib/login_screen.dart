@@ -1,4 +1,6 @@
+import 'package:car_rental_app/auth_service.dart';
 import 'package:car_rental_app/signup_screen.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:car_rental_app/colors.dart';
 import 'package:car_rental_app/home_screen.dart';
@@ -16,15 +18,20 @@ class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController passwordController = TextEditingController();
   final DBHelper dbHelper = DBHelper();
 
-  void login() async {
-    final user = await dbHelper.getUser();
-    if (user['email'] == emailController.text && user['password'] == passwordController.text) {
-      Navigator.pushReplacement(
-          context, MaterialPageRoute(builder: (context) => HomeScreen()));
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Invalid credentials')));
-    }
+void login(String email, String password) async {
+  final authService = AuthService();
+  User? user = await authService.login(email, password);
+
+  if (user != null) {
+    if (!mounted) return;
+    Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => HomeScreen()));
+  } else {
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text("Invalid credentials")),
+    );
   }
+}
 
   @override
   Widget build(BuildContext context) {
@@ -68,15 +75,32 @@ class _LoginScreenState extends State<LoginScreen> {
                     borderRadius: BorderRadius.circular(10),
                   ),
                 ),
-                onPressed: login,
+                onPressed: () {
+                  login(emailController.text, passwordController.text);
+                },
                 child: Text('Login', style: TextStyle(color: Colors.white)),
               ),
-              TextButton(
-                onPressed: () {
-                  Navigator.push(context, MaterialPageRoute(builder: (context) => SignupScreen()));
-                },
-                child: Text('Don\'t have an account? Sign up', style: TextStyle(color: AppColors.primary)),
-              )
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    "Don't have an account?",
+                    style: TextStyle(color: AppColors.primary),
+                  ),
+                  TextButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => SignupScreen()),
+                      );
+                    },
+                    child: Text(
+                      'Sign up',
+                      style: TextStyle(color: AppColors.secondary),
+                    ),
+                  ),
+                ],
+              ),
             ],
           ),
         ),

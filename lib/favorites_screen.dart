@@ -16,7 +16,7 @@ class FavoritesScreen extends StatefulWidget {
 }
 
 class _FavoritesScreenState extends State<FavoritesScreen> {
-  int _selectedIndex = 2;
+  final int _selectedIndex = 2;
 
   void _onItemTapped(int index) {
     if (index != _selectedIndex) {
