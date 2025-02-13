@@ -18,32 +18,54 @@ class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController passwordController = TextEditingController();
   final DBHelper dbHelper = DBHelper();
 
-void login(String email, String password) async {
-  final authService = AuthService();
-  User? user = await authService.login(email, password);
+  void login(String email, String password) async {
+    final authService = AuthService();
+    User? user = await authService.login(email, password);
 
-  if (user != null) {
-    if (!mounted) return;
-    Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => HomeScreen()));
-  } else {
-    if (!mounted) return;
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text("Invalid credentials")),
-    );
+    if (user != null) {
+      if (!mounted) return;
+      Navigator.pushReplacement(
+          context, MaterialPageRoute(builder: (context) => HomeScreen()));
+    } else {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Invalid credentials")),
+      );
+    }
   }
-}
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () => FocusScope.of(context).unfocus(),
       child: Scaffold(
-        backgroundColor: AppColors.background,
+        backgroundColor: Colors.white,
         body: Padding(
           padding: EdgeInsets.all(20),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Image(
+                    image: AssetImage(
+                        'assets/logo_1.png'), 
+                    width: 100, 
+                    height: 100,
+                    fit: BoxFit.cover,
+                    colorBlendMode: BlendMode.screen,
+                  ),
+                  SizedBox(width: 15,),
+                  Text('Car Rental \nApp', style: TextStyle(
+                    fontSize: 30, 
+                    color: AppColors.textDark,
+                    fontWeight: FontWeight.bold,
+                  ),
+                  ),
+                ],
+              ),
+              SizedBox(height: 40),
               TextField(
                 controller: emailController,
                 decoration: InputDecoration(

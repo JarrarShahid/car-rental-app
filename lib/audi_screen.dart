@@ -4,7 +4,6 @@ import 'package:car_rental_app/car_detail_screen.dart';
 import 'package:car_rental_app/car_model.dart';
 import 'package:car_rental_app/colors.dart';
 import 'package:car_rental_app/data.dart';
-import 'package:car_rental_app/db_helper.dart';
 import 'package:car_rental_app/favorites_screen.dart';
 import 'package:car_rental_app/home_screen.dart';
 import 'package:car_rental_app/mercedes_screen.dart';
@@ -23,7 +22,7 @@ class AudiScreen extends StatefulWidget {
 
 class _AudiScreenState extends State<AudiScreen> {
   int _selectedIndex = 0;
-  int _selectedCategory = 0;
+  int _selectedCategory = 4;
   final categories = ['All', 'Tesla', 'BMW', 'Mercedes', 'Audi'];
   TextEditingController searchController = TextEditingController();
   List<Car> filteredCars = [];
@@ -152,14 +151,33 @@ class _AudiScreenState extends State<AudiScreen> {
                             width: 5,
                           ),
                           Expanded(
-                            child: TextField(
-                              decoration: InputDecoration(
-                                hintText: 'Search for your dream car',
-                                hintStyle:
-                                    TextStyle(color: AppColors.textLight),
-                                border: InputBorder.none,
-                                contentPadding:
-                                    EdgeInsets.symmetric(vertical: 15),
+                            child: GestureDetector(
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => SearchScreen()),
+                                );
+                              },
+                              child: Container(
+                                width: double
+                                    .infinity, 
+                                padding: EdgeInsets.symmetric(
+                                    vertical: 15, horizontal: 10),
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(15),
+                                ),
+                                child: Align(
+                                  alignment: Alignment.centerLeft,
+                                  child: Text(
+                                    'Search for your dream car',
+                                    overflow: TextOverflow
+                                        .ellipsis, 
+                                    style:
+                                        TextStyle(color: AppColors.textLight),
+                                  ),
+                                ),
                               ),
                             ),
                           ),

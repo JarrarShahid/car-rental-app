@@ -4,7 +4,6 @@ import 'package:car_rental_app/home_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:car_rental_app/db_helper.dart';
-import 'package:car_rental_app/login_screen.dart';
 
 class SignupScreen extends StatefulWidget {
   const SignupScreen({super.key});
@@ -32,16 +31,27 @@ void signup() async {
 
     if (user != null) {
       if (!mounted) return;
-      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => HomeScreen()));
+      Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(builder: (context) => HomeScreen()),
+        (route) => false,
+      );
+    } else {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Signup failed. Please try again.")),
+      );
     }
   } catch (e) {
+    print("Firebase Signup Error: $e"); 
+
     if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text("Signup failed: ${e.toString()}")),
     );
-    print("Firebase Signup Error: $e"); // ✅ Debugging logs
   }
 }
+
 
 
 
@@ -50,12 +60,33 @@ void signup() async {
     return GestureDetector(
       onTap: () => FocusScope.of(context).unfocus(),
       child: Scaffold(
-        backgroundColor: AppColors.background,
+        backgroundColor: Colors.white,
         body: Padding(
           padding: EdgeInsets.all(20),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Image(
+                    image: AssetImage(
+                        'assets/logo_1.png'), 
+                    width: 100,
+                    height: 100,
+                    fit: BoxFit.cover, 
+                    colorBlendMode: BlendMode.screen,
+                  ),
+                  SizedBox(width: 15,),
+                  Text('Car Rental \nApp', style: TextStyle(
+                    fontSize: 30, 
+                    color: AppColors.textDark,
+                    fontWeight: FontWeight.bold,
+                  ),
+                  ),
+                ],
+              ),
+              SizedBox(height: 40),
               TextField(
                 controller: nameController,
                 decoration: InputDecoration(

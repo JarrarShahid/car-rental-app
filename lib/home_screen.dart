@@ -3,8 +3,8 @@ import 'package:car_rental_app/car_detail_screen.dart';
 import 'package:car_rental_app/car_model.dart';
 import 'package:car_rental_app/colors.dart';
 import 'package:car_rental_app/data.dart';
-import 'package:car_rental_app/db_helper.dart';
 import 'package:car_rental_app/favorites_screen.dart';
+import 'package:car_rental_app/notification_screen.dart';
 import 'package:car_rental_app/profile_screen.dart';
 import 'package:car_rental_app/search_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -46,8 +46,6 @@ class _HomeScreenState extends State<HomeScreen> {
       });
     }
   }
-
-
 
   void filterSearch(String query) {
     if (query.isEmpty) {
@@ -104,7 +102,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                               "Hello, $userName",
+                              "Hello, $userName",
                               style: TextStyle(
                                 fontSize: 24,
                                 fontWeight: FontWeight.bold,
@@ -128,12 +126,21 @@ class _HomeScreenState extends State<HomeScreen> {
                             shape: BoxShape.circle,
                             color: Colors.white.withOpacity(0.2),
                           ),
-                          child: Padding(
-                            padding: EdgeInsets.all(8),
-                            child: Icon(
-                              Icons.notifications_none_rounded,
-                              color: Colors.white,
-                              size: 28,
+                          child: GestureDetector(
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => NotificationScreen()),
+                              );
+                            },
+                            child: Padding(
+                              padding: EdgeInsets.all(8),
+                              child: Icon(
+                                Icons.notifications_none_rounded,
+                                color: Colors.white,
+                                size: 28,
+                              ),
                             ),
                           ),
                         ),
@@ -165,14 +172,33 @@ class _HomeScreenState extends State<HomeScreen> {
                             width: 5,
                           ),
                           Expanded(
-                            child: TextField(
-                              decoration: InputDecoration(
-                                hintText: 'Search for your dream car',
-                                hintStyle:
-                                    TextStyle(color: AppColors.textLight),
-                                border: InputBorder.none,
-                                contentPadding:
-                                    EdgeInsets.symmetric(vertical: 15),
+                            child: GestureDetector(
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => SearchScreen()),
+                                );
+                              },
+                              child: Container(
+                                width: double
+                                    .infinity, 
+                                padding: EdgeInsets.symmetric(
+                                    vertical: 15, horizontal: 10),
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(15),
+                                ),
+                                child: Align(
+                                  alignment: Alignment.centerLeft,
+                                  child: Text(
+                                    'Search for your dream car',
+                                    overflow: TextOverflow
+                                        .ellipsis, 
+                                    style:
+                                        TextStyle(color: AppColors.textLight),
+                                  ),
+                                ),
                               ),
                             ),
                           ),
@@ -403,16 +429,16 @@ class _HomeScreenState extends State<HomeScreen> {
                               },
                               child: Container(
                                 margin: EdgeInsets.only(
-                                    bottom: 10), // Reduced margin
-                                padding: EdgeInsets.all(12), // Reduced padding
+                                    bottom: 10), 
+                                padding: EdgeInsets.all(12), 
                                 decoration: BoxDecoration(
                                   color: AppColors.cardBg,
                                   borderRadius: BorderRadius.circular(
-                                      12), // Smaller radius
+                                      12), 
                                   boxShadow: [
                                     BoxShadow(
                                       color: Colors.black.withOpacity(0.05),
-                                      blurRadius: 8, // Slightly reduced blur
+                                      blurRadius: 8,
                                       offset: Offset(0, 3),
                                     ),
                                   ],
@@ -420,8 +446,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                 child: Row(
                                   children: [
                                     Container(
-                                      height: 70, // Reduced height
-                                      width: 100, // Reduced width
+                                      height: 70, 
+                                      width: 100, 
                                       decoration: BoxDecoration(
                                         color:
                                             AppColors.primary.withOpacity(0.1),
@@ -430,12 +456,12 @@ class _HomeScreenState extends State<HomeScreen> {
                                       child: Center(
                                         child: Image.asset(
                                           featuredCars[index].image,
-                                          height: 50, // Smaller image
+                                          height: 50, 
                                           fit: BoxFit.contain,
                                         ),
                                       ),
                                     ),
-                                    SizedBox(width: 10), // Adjusted spacing
+                                    SizedBox(width: 10), 
                                     Expanded(
                                       child: Column(
                                         crossAxisAlignment:
@@ -445,7 +471,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                             featuredCars[index].name,
                                             style: TextStyle(
                                               fontWeight: FontWeight.bold,
-                                              fontSize: 14, // Reduced font size
+                                              fontSize: 14, 
                                               color: AppColors.textDark,
                                             ),
                                           ),
@@ -455,7 +481,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                               Icon(
                                                 Icons.star,
                                                 color: Colors.amber,
-                                                size: 14, // Smaller icon
+                                                size: 14, 
                                               ),
                                               SizedBox(width: 4),
                                               Text(
@@ -477,7 +503,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                                 style: TextStyle(
                                                   fontWeight: FontWeight.bold,
                                                   fontSize:
-                                                      14, // Reduced font size
+                                                      14,
                                                   color: AppColors.secondary,
                                                 ),
                                               ),

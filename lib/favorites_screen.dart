@@ -5,7 +5,6 @@ import 'package:car_rental_app/data.dart';
 import 'package:car_rental_app/car_detail_screen.dart';
 import 'package:car_rental_app/home_screen.dart';
 import 'package:car_rental_app/search_screen.dart';
-import 'package:car_rental_app/favorites_screen.dart';
 import 'package:car_rental_app/profile_screen.dart';
 
 class FavoritesScreen extends StatefulWidget {
@@ -60,25 +59,34 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
         ),
         body: Padding(
           padding: EdgeInsets.all(20),
-          child: featuredCars.isEmpty
-              ? Center(
-                  child: Text(
-                    "No favorite cars yet!",
-                    style: TextStyle(fontSize: 18, color: AppColors.textLight),
+          child: Column(
+            children: [
+              if (featuredCars.isEmpty)
+                Expanded(
+                 
+                  child: Center(
+                    child: Text(
+                      "No favorite cars yet!",
+                      style:
+                          TextStyle(fontSize: 18, color: AppColors.textLight),
+                    ),
                   ),
                 )
-              : Expanded(
+              else
+                Expanded(
+                  
                   child: ListView.builder(
                     itemCount: featuredCars.length,
                     itemBuilder: (context, index) {
                       return Padding(
-                        padding: EdgeInsets.only(
-                            bottom: 15), // Adds spacing between items
+                        padding: EdgeInsets.only(bottom: 15),
                         child: _buildCarCard(featuredCars[index]),
                       );
                     },
                   ),
                 ),
+            ],
+          ),
         ),
         bottomNavigationBar: Container(
           decoration: BoxDecoration(

@@ -4,8 +4,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
-  // ✅ Sign Up User
-  Future<User?> signUp(String name, String email, String contact, String password) async {
+  // Sign Up User
+ Future<User?> signUp(String name, String email, String contact, String password) async {
   try {
     UserCredential userCredential = await FirebaseAuth.instance.createUserWithEmailAndPassword(
       email: email,
@@ -15,16 +15,22 @@ class AuthService {
     User? user = userCredential.user;
 
     if (user != null) {
-      await user.updateDisplayName(name); // ✅ Set display name
+      await user.updateDisplayName(name); // Set display name
 
-      // ✅ Save contact number in Firestore
+      // Save in Firestore
       await FirebaseFirestore.instance.collection("users").doc(user.uid).set({
         'name': name,
         'email': email,
-        'contact': contact, // Store contact number
+        'contact': contact, 
       });
 
-      return user;
+      // Automatically log the user in after signing up
+      await FirebaseAuth.instance.signInWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+
+      return FirebaseAuth.instance.currentUser; // Ensure user session is active
     }
   } catch (e) {
     print("Firebase Signup Error: $e");
@@ -32,7 +38,8 @@ class AuthService {
   return null;
 }
 
-  // ✅ Login User
+
+  // Login User
   Future<User?> login(String email, String password) async {
     try {
       UserCredential userCredential = await _auth.signInWithEmailAndPassword(
@@ -46,12 +53,12 @@ class AuthService {
     }
   }
 
-  // ✅ Logout User
+  // Logout User
   Future<void> logout() async {
     await _auth.signOut();
   }
 
-  // ✅ Get Current User
+  // Get Current User
   User? getCurrentUser() {
     return _auth.currentUser;
   }

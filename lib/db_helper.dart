@@ -10,7 +10,7 @@ class DBHelper {
     await prefs.setString('name', name);
     await prefs.setString('email', email);
     await prefs.setString('contact', contact);
-    await prefs.setString('password', password); // Ensure password is stored
+    await prefs.setString('password', password); 
   }
 
   Future<Map<String, String?>> getUser() async {
@@ -25,13 +25,13 @@ class DBHelper {
 
   Future<void> logout(BuildContext context) async {
     final prefs = await SharedPreferences.getInstance();
-    await prefs.clear(); // Completely clears all stored user data
+    await prefs.clear();
 
-    if (!context.mounted) return; // Ensure context is valid
+    if (!context.mounted) return; 
     Navigator.pushAndRemoveUntil(
       context,
       MaterialPageRoute(builder: (context) => LoginScreen()),
-      (route) => false, // Removes all previous routes
+      (route) => false, 
     );
   }
 }

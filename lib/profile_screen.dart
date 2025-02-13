@@ -1,4 +1,3 @@
-import 'package:car_rental_app/auth_service.dart';
 import 'package:car_rental_app/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:car_rental_app/db_helper.dart';
@@ -6,7 +5,6 @@ import 'package:car_rental_app/login_screen.dart';
 import 'package:car_rental_app/home_screen.dart';
 import 'package:car_rental_app/search_screen.dart';
 import 'package:car_rental_app/favorites_screen.dart';
-import 'package:car_rental_app/profile_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
@@ -53,36 +51,39 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   void loadUserData() async {
-  final user = FirebaseAuth.instance.currentUser;
+    final user = FirebaseAuth.instance.currentUser;
 
-  if (user != null) {
-    try {
-      DocumentSnapshot userData = await FirebaseFirestore.instance.collection("users").doc(user.uid).get();
+    if (user != null) {
+      try {
+        DocumentSnapshot userData = await FirebaseFirestore.instance
+            .collection("users")
+            .doc(user.uid)
+            .get();
 
-      if (userData.exists) {
-        if (!mounted) return; // ✅ Check if widget is still active before updating UI
+        if (userData.exists) {
+          if (!mounted)
+            return; // Check if widget is still active before updating UI
 
-        setState(() {
-          name = userData["name"] ?? "User";
-          email = userData["email"] ?? "No Email";
-          contact = userData["contact"] ?? "No Contact";
-        });
+          setState(() {
+            name = userData["name"] ?? "User";
+            email = userData["email"] ?? "No Email";
+            contact = userData["contact"] ?? "No Contact";
+          });
+        }
+      } catch (e) {
+        print("Firestore Error: $e");
+
+        if (!mounted) return; // Prevent UI update if widget is disposed
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+              content: Text("Failed to load profile. Please try again later.")),
+        );
       }
-    } catch (e) {
-      print("Firestore Error: $e");
-      
-      if (!mounted) return; // ✅ Prevent UI update if widget is disposed
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Failed to load profile. Please try again later.")),
-      );
     }
   }
-}
-
-
 
   void logout() async {
-    await FirebaseAuth.instance.signOut(); // ✅ Logs out the user from Firebase
+    await FirebaseAuth.instance.signOut(); // Logs out the user from Firebase
 
     if (!mounted) return;
     Navigator.pushAndRemoveUntil(
@@ -132,77 +133,80 @@ class _ProfileScreenState extends State<ProfileScreen> {
       ),
       body: Padding(
         padding: EdgeInsets.all(20),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Container(
-              padding: EdgeInsets.all(15),
-              decoration: BoxDecoration(
-                color: AppColors.cardBg,
-                borderRadius: BorderRadius.circular(15),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.1),
-                    blurRadius: 10,
-                    offset: Offset(0, 5),
-                  ),
-                ],
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text("Name:",
-                      style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                          color: AppColors.textDark)),
-                  SizedBox(height: 5),
-                  Text(name,
-                      style:
-                          TextStyle(fontSize: 16, color: AppColors.textLight)),
-                  Divider(),
-                  Text("Email:",
-                      style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                          color: AppColors.textDark)),
-                  SizedBox(height: 5),
-                  Text(email,
-                      style:
-                          TextStyle(fontSize: 16, color: AppColors.textLight)),
-                  Divider(),
-                  Text("Contact Number:",
-                      style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                          color: AppColors.textDark)),
-                  SizedBox(height: 5),
-                  Text(contact,
-                      style:
-                          TextStyle(fontSize: 16, color: AppColors.textLight)),
-                ],
-              ),
-            ),
-            SizedBox(height: 30),
-            Center(
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.secondary,
-                  padding: EdgeInsets.symmetric(vertical: 15, horizontal: 50),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
+        child: SingleChildScrollView(
+          
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                padding: EdgeInsets.all(15),
+                decoration: BoxDecoration(
+                  color: AppColors.cardBg,
+                  borderRadius: BorderRadius.circular(15),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.1),
+                      blurRadius: 10,
+                      offset: Offset(0, 5),
+                    ),
+                  ],
                 ),
-                onPressed: () => logout(),
-                child: Text('Logout',
-                    style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold)),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text("Name:",
+                        style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            color: AppColors.textDark)),
+                    SizedBox(height: 5),
+                    Text(name,
+                        style: TextStyle(
+                            fontSize: 16, color: AppColors.textLight)),
+                    Divider(),
+                    Text("Email:",
+                        style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            color: AppColors.textDark)),
+                    SizedBox(height: 5),
+                    Text(email,
+                        style: TextStyle(
+                            fontSize: 16, color: AppColors.textLight)),
+                    Divider(),
+                    Text("Contact Number:",
+                        style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            color: AppColors.textDark)),
+                    SizedBox(height: 5),
+                    Text(contact,
+                        style: TextStyle(
+                            fontSize: 16, color: AppColors.textLight)),
+                  ],
+                ),
               ),
-            ),
-          ],
+              SizedBox(height: 30),
+              Center(
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.secondary,
+                    padding: EdgeInsets.symmetric(vertical: 15, horizontal: 50),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  ),
+                  onPressed: () => logout(),
+                  child: Text('Logout',
+                      style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold)),
+                ),
+              ),
+              SizedBox(height: 20), 
+            ],
+          ),
         ),
       ),
       bottomNavigationBar: Container(

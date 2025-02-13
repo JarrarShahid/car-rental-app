@@ -4,7 +4,6 @@ import 'package:car_rental_app/colors.dart';
 import 'package:car_rental_app/data.dart';
 import 'package:car_rental_app/car_detail_screen.dart';
 import 'package:car_rental_app/home_screen.dart';
-import 'package:car_rental_app/search_screen.dart';
 import 'package:car_rental_app/favorites_screen.dart';
 import 'package:car_rental_app/profile_screen.dart';
 
@@ -20,12 +19,21 @@ class _SearchScreenState extends State<SearchScreen> {
   List<Car> filteredCars = [];
 
   final int _selectedIndex = 1;
+  final FocusNode searchFocusNode = FocusNode();
 
-  @override
-  void initState() {
-    super.initState();
-    filteredCars = featuredCars;
-  }
+
+@override
+void initState() {
+  super.initState();
+  filteredCars = featuredCars;
+
+  
+  Future.delayed(Duration(milliseconds: 300), () {
+    if (mounted) {
+      FocusScope.of(context).requestFocus(searchFocusNode);
+    }
+  });
+}
 
   void filterSearch(String query) {
     if (query.isEmpty) {
@@ -92,6 +100,7 @@ class _SearchScreenState extends State<SearchScreen> {
             children: [
               TextField(
                 controller: searchController,
+                focusNode: searchFocusNode,
                 onSubmitted: filterSearch,
                 decoration: InputDecoration(
                   hintText: "Search for cars...",
