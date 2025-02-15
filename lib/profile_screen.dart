@@ -61,8 +61,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
             .get();
 
         if (userData.exists) {
-          if (!mounted)
+          if (!mounted) {
             return; // Check if widget is still active before updating UI
+          }
 
           setState(() {
             name = userData["name"] ?? "User";
